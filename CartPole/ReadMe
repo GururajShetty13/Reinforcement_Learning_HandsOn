@@ -1,0 +1,26 @@
+# CartPole
+
+## Overview
+This folder contains my work on the `CartPole-v1` reinforcement learning environment.
+
+I used this environment as the starting point to understand the basic reinforcement learning workflow, including:
+- environment setup
+- observation and action spaces
+- reward collection
+- episode termination
+- training and evaluation of an RL agent
+
+## What I did
+- Set up the CartPole environment in Python
+- Ran random actions to understand the environment behavior
+- Observed how the cart and pole system reacts to actions
+- Trained an agent using **PPO**
+- Compared the trained policy with the random policy
+
+## Outcome
+This environment helped me build a strong foundation in reinforcement learning before moving to more difficult continuous-control tasks.
+
+## Main learning points
+- Understanding the RL loop: state → action → reward → next state
+- Difference between random policy and trained policy
+- Basic stabilization problem in a discrete-action environment
