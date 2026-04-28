@@ -1,0 +1,23 @@
+## Overview
+This folder contains my work on the `Pendulum-v1` reinforcement learning environment.
+
+I used this environment to study a continuous-control problem where the pendulum must be controlled using torque. Unlike CartPole, this task is more difficult because it involves continuous actions and a harder stabilization problem.
+
+## What I did
+- Set up the Pendulum environment in Python
+- Explored the action and observation spaces
+- Ran random actions to verify the dynamics and reward behavior
+- Trained and compared multiple RL algorithms:
+  - **PPO**
+  - **SAC**
+  - **TD3**
+- Improved training performance using longer training and normalization
+
+## Outcome
+Among the tested algorithms, **SAC** gave the best results for this task. This environment served as my main continuous-control benchmark.
+
+## Main learning points
+- Understanding continuous action spaces
+- Comparing multiple RL algorithms on the same task
+- Observing the difference between weak and strong continuous-control methods
+- Learning that algorithm choice matters depending on the environment
