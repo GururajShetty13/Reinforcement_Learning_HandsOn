@@ -1,0 +1,25 @@
+## Overview
+This folder contains my work on the `InvertedPendulum-v5` reinforcement learning environment.
+
+I used this environment to study the inverted pendulum as a control problem, where the goal is to keep the pole balanced upright by applying a continuous force to the cart.
+
+## What I did
+- Set up the environment in Python using Gymnasium and MuJoCo
+- Inspected the action and observation spaces
+- Identified the physical meaning of the state variables:
+  - cart position
+  - pole angle
+  - cart velocity
+  - pole angular velocity
+- Ran random actions to understand the simulation behavior
+- Trained a controller using **PPO**
+- Evaluated the trained policy over multiple episodes
+
+## Outcome
+The trained PPO controller was able to balance the inverted pendulum successfully and consistently during evaluation.
+
+## Main learning points
+- Understanding the inverted pendulum as a feedback control problem
+- Relating state, action, and reward to physical system behavior
+- Using reinforcement learning for stabilization of a dynamic system
+- Building a bridge between simulation-based RL and control-system interpretation
