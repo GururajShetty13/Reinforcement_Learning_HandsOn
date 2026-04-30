@@ -1,0 +1,51 @@
+# Upright Inverted Pendulum
+
+## Overview
+This folder contains my work on a custom **Upright Inverted Pendulum** reinforcement learning environment.
+
+In this setup, the pendulum starts from the **bottom hanging position** and the agent must learn to **swing it up** and then **balance it upright**. This makes the task more challenging than the standard inverted pendulum problem, where the system usually starts already near the upright position and mainly requires stabilization.
+
+## Objective
+The control objective in this environment is:
+
+1. Start from the bottom position  
+2. Build momentum through repeated motion  
+3. Swing the pendulum upward  
+4. Stabilize it near the upright equilibrium  
+
+This combines both **swing-up control** and **stabilization control** in one task.
+
+## Environment design
+The custom environment is implemented in Python using a Gymnasium-style structure.
+
+### Observation space
+The state is represented as:
+
+- `cos(theta)`
+- `sin(theta)`
+- `theta_dot`
+
+This form avoids discontinuities in angle representation and provides a stable input for reinforcement learning.
+
+### Action space
+The action is a **continuous torque** applied to the pendulum:
+
+- range: `[-2.0, 2.0]`
+
+This allows smooth control and makes the task suitable for continuous-control algorithms.
+
+## What I did
+- Built a custom upright inverted pendulum environment
+- Configured the pendulum to start from the **bottom**
+- Designed the state representation and torque-based control input
+- Implemented a reward function to encourage:
+  - movement toward upright
+  - reduced angular velocity near the top
+  - stable balancing
+- Tested the environment with random actions
+- Trained the system using **SAC**
+- Visualized the motion to inspect learned behavior
+- Evaluated whether the pendulum could reach and hold the upright region
+
+## Learning process
+The agent initially applies large torques to build momentum and swing the pendulum upward. As it approaches the upright region, the control becomes smaller and smoother, indicating that the policy transitions from swing-up to stabilization.
