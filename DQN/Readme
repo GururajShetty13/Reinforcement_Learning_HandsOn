@@ -1,0 +1,69 @@
+# Upright Inverted Pendulum with DQN
+
+## Overview
+This folder contains my work on a custom **Upright Inverted Pendulum** environment solved using a **DQN-based reinforcement learning approach**.
+
+The task starts with the pendulum in the **bottom hanging position**, and the goal is to make the agent learn to:
+
+1. swing the pendulum upward  
+2. reach the upright region  
+3. stabilize it there  
+
+This makes the task more challenging than the standard inverted pendulum problem, because it requires both **swing-up control** and **balancing control**.
+
+## Why DQN
+This version was developed to explore a **discrete-action reinforcement learning approach**, motivated by the idea that it may be simpler for later **FPGA-oriented implementation**.
+
+Since DQN requires a discrete action space, the continuous torque input was replaced with a fixed set of predefined torque values.
+
+## Environment design
+
+### Observation space
+The state is represented as:
+
+- `cos(theta)`
+- `sin(theta)`
+- `theta_dot`
+
+This avoids angle discontinuity and gives a compact physical description of the pendulum state.
+
+### Action space
+The action space is discrete, with torque values mapped from action indices.`
+
+This lets the DQN output Q-values for a fixed number of torque choices.
+
+## What I did
+- Built a custom DQN-compatible upright inverted pendulum environment
+- Replaced the continuous torque action with a discretized action set
+- Designed the environment so the pendulum starts from the **bottom**
+- Implemented reward shaping for:
+  - moving toward the upright position
+  - reducing angular velocity near the top
+  - maintaining stable balance
+  - rewarding progress toward upright
+- Added visualization to inspect pendulum motion during testing and evaluation
+- Trained the environment using **DQN**
+- Evaluated whether the learned policy could:
+  - swing up from the bottom
+  - reach the upright region
+  - stay stabilized there
+
+## Reward design
+The reward function was designed to encourage both swing-up and stabilization. It includes:
+
+- reward for being near the upright position
+- penalty for excessive angular velocity
+- small penalty for torque usage
+- progress reward for reducing angle error
+- bonus rewards for reaching and maintaining the upright region
+
+This reward shaping helps the DQN agent learn the full control task rather than only partial motion.
+
+## Main objective
+The control objective is:
+
+- start from the hanging-down position
+- apply torque to build momentum
+- swing the pendulum upward
+- switch to small corrective actions near the top
+- maintain stable upright balance
