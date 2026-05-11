@@ -1,0 +1,23 @@
+Training and model changes
+
+The original DQN training setup used a much larger and more software-oriented configuration:
+
+replay buffer size: 100000
+learning starts: 5000
+batch size: 128
+target update interval: 2000
+exploration fraction: 0.4
+final epsilon: 0.02
+neural network: [256, 256]
+
+In the FPGA-friendly version, you simplified this significantly:
+
+replay buffer size reduced to 10000
+learning starts reduced to 1000
+batch size reduced to 64
+target update interval reduced to 1000
+exploration fraction reduced to 0.30
+final epsilon changed to 0.05
+neural network reduced to a single hidden layer [32]
+
+The reward function itself was kept essentially the same as the earlier successful version, because it gave the best balancing performance.
