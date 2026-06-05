@@ -1,0 +1,7 @@
+This project implements a hardware-accelerated Deep Q-Network (DQN) for the swing-up and upright stabilization of an inverted pendulum.
+
+The complete reinforcement-learning workflow is implemented as synthesizable C++ using AMD/Xilinx Vitis HLS and exported as a reusable Vivado IP core. The design performs both DQN training and greedy policy evaluation inside the Programmable Logic (PL).
+
+The Processing System (PS) controls the accelerator through an AXI4-Lite interface. It can start the accelerator, monitor its execution status, and read training and evaluation results such as the final pendulum angle, angular velocity, accumulated reward, action distribution, and balance status.
+
+The latest implementation uses the Lion optimizer for neural-network weight updates instead of Adam. Lion reduces optimizer state and avoids the second-moment calculations, square-root, and division operations required by Adam, making it more suitable for FPGA implementation.
