@@ -1,0 +1,18 @@
+This project implements a Deep Q-Network (DQN) controller for an upright inverted pendulum using Stable-Baselines3 and the Adam optimizer.
+
+The environment uses the state:
+
+[cos(theta), sin(theta), theta_dot]
+
+and seven discrete torque actions:
+
+[-2.0, -0.5, -0.1, 0.0, 0.1, 0.5, 2.0]
+
+The training script records episode number, episode length, total reward, average reward per step, average absolute TD error, epsilon, and total timesteps.
+
+Result Files
+training_metrics.csv — training progress for every episode.
+validation_summary.csv — summary of each fixed validation checkpoint.
+validation_trajectories.csv — complete states, actions, torques, rewards, and next states for every validation step.
+evaluation_summary.csv — final results for each selected evaluation initial condition.
+evaluation_trajectories.csv — complete step-by-step data for every evaluation batch.
