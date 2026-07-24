@@ -14,7 +14,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 
 MULTISEED_OUTPUT_DIR = "python_dqn_multiseed_results_10"
 HARDWARE_RESULTS_DIR = (
-    "hardware_dqn_results"  # optional; not used during multi-seed training
+    "hardware_dqn_results" 
 )
 SEEDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
