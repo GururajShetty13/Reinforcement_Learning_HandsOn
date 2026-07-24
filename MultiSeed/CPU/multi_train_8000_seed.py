@@ -6,11 +6,11 @@ from typing import Dict, List
 
 import numpy as np
 import pandas as pd
+from multi_upright_8000_seed import UprightInvertedPendulumDQNFPGAEnv
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
-from upright_8000_seed import UprightInvertedPendulumDQNFPGAEnv
 
 MULTISEED_OUTPUT_DIR = "python_dqn_multiseed_results_10"
 HARDWARE_RESULTS_DIR = (
