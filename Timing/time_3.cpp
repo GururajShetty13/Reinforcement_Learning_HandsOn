@@ -51,8 +51,6 @@
 #define THETA_DOT_STABLE_THRESHOLD 0.5f
 #define SUCCESS_CONSECUTIVE_STABLE_STEPS 30
 
-// Profiling-only configuration.
-// Used by mode 3 to run a repeated inference-only workload.
 #define INFERENCE_PROFILE_STEPS 1000
 #define NN_FORWARD_PROFILE_STEPS 10000
 #define NN_BACKPROP_PROFILE_STEPS 10000
@@ -60,11 +58,6 @@
 #define NN_TRAIN_SAMPLE_PROFILE_STEPS 10
 #define REPLAY_PROFILE_STEPS 10000
 
-// ============================================================
-// Local transition type
-// The large replay memory is not stored as an array of this struct.
-// This struct is used only as a small local sample container.
-// ============================================================
 
 struct Transition {
     float state[STATE_SIZE];
@@ -79,9 +72,6 @@ struct EnvState {
     float theta_dot;
 };
 
-// ============================================================
-// Random number generator
-// ============================================================
 
 static unsigned int g_seed = 42u;
 
@@ -106,9 +96,6 @@ static int rand_int(int maximum) {
     return value;
 }
 
-// ============================================================
-// Utility functions
-// ============================================================
 
 static float abs_float(float value) {
 #pragma HLS INLINE
@@ -151,10 +138,6 @@ static float relu_derivative(float value) {
     return value > 0.0f ? 1.0f : 0.0f;
 }
 
-// ============================================================
-// Environment module
-// Only this section should change heavily when changing the environment.
-// ============================================================
 
 static const float ACTION_VALUES[ACTION_SIZE] = {
     -2.0f, -0.5f, -0.1f, 0.0f, 0.1f, 0.5f, 2.0f
@@ -295,12 +278,6 @@ static int is_stable_state(const EnvState &environment_state) {
         && abs_float(environment_state.theta_dot) < THETA_DOT_STABLE_THRESHOLD
     ) ? 1 : 0;
 }
-
-// ============================================================
-
-// DQN network module
-// Network architecture: STATE_SIZE -> HIDDEN1_SIZE -> HIDDEN2_SIZE -> OUTPUT_SIZE
-// ============================================================
 
 static void initialize_network(
     float w1[STATE_SIZE][HIDDEN1_SIZE],
@@ -748,7 +725,6 @@ static float train_one_sample_adam(
     float hidden2_delta[HIDDEN2_SIZE];
     float hidden1_delta[HIDDEN1_SIZE];
 
-    // Backpropagate from output layer to hidden layer 2.
     for (int hidden2 = 0; hidden2 < HIDDEN2_SIZE; hidden2++) {
         float sum = 0.0f;
 
@@ -765,7 +741,6 @@ static float train_one_sample_adam(
             );
     }
 
-    // Backpropagate from hidden layer 2 to hidden layer 1.
     for (int hidden1 = 0; hidden1 < HIDDEN1_SIZE; hidden1++) {
         float sum = 0.0f;
 
@@ -782,7 +757,6 @@ static float train_one_sample_adam(
             );
     }
 
-    // Update output layer: hidden2 -> output.
     for (int hidden2 = 0; hidden2 < HIDDEN2_SIZE; hidden2++) {
         for (int output = 0; output < OUTPUT_SIZE; output++) {
 #pragma HLS PIPELINE II=1
@@ -811,7 +785,6 @@ static float train_one_sample_adam(
         );
     }
 
-    // Update second hidden layer: hidden1 -> hidden2.
     for (int hidden1 = 0; hidden1 < HIDDEN1_SIZE; hidden1++) {
         for (int hidden2 = 0; hidden2 < HIDDEN2_SIZE; hidden2++) {
 #pragma HLS PIPELINE II=1
@@ -840,7 +813,6 @@ static float train_one_sample_adam(
         );
     }
 
-    // Update first hidden layer: input -> hidden1.
     for (int input = 0; input < STATE_SIZE; input++) {
         for (int hidden1 = 0; hidden1 < HIDDEN1_SIZE; hidden1++) {
 #pragma HLS PIPELINE II=1
@@ -886,12 +858,6 @@ static float epsilon_for_episode(int episode_index) {
 
     return clip_float(epsilon, EPS_END, EPS_START);
 }
-
-// ============================================================
-// Replay buffer module
-// The replay memory is split into separate arrays so HLS can map
-// large storage efficiently to URAM/BRAM instead of FF/LUT registers.
-// ============================================================
 
 static void store_transition(
     int index,
@@ -939,11 +905,6 @@ static void load_transition(
     transition.done = replay_done[index];
 }
 
-
-// ============================================================
-// Output indexing helpers
-// ============================================================
-
 static int validation_step_index(int validation_index, int step) {
 #pragma HLS INLINE
     return validation_index * MAX_STEPS + step;
@@ -963,11 +924,6 @@ static int evaluation_state_index(int batch_index, int step, int component) {
 #pragma HLS INLINE
     return (batch_index * MAX_STEPS + step) * STATE_SIZE + component;
 }
-
-
-// ============================================================
-// Validation and evaluation modules
-// ============================================================
 
 static void run_validation_episode(
     int validation_index,
@@ -1288,14 +1244,6 @@ static void run_inference_profile(
         completed_inference_steps = step + 1;
     }
 }
-
-
-// ============================================================
-// Neural-network internal profiling modules
-// These modes are for board-level timing from PYNQ. Each function
-// repeats one specific neural-network action many times so that Python
-// timing can show which operation consumes more time.
-// ============================================================
 
 static void profile_forward_layer1_only(
     float w1[STATE_SIZE][HIDDEN1_SIZE],
@@ -1852,10 +1800,6 @@ static void profile_replay_access(
     checksum_out = checksum;
 }
 
-// ============================================================
-// Top-level accelerator
-// ============================================================
-
 extern "C" {
 
 void dqn_eva(
@@ -1991,10 +1935,6 @@ void dqn_eva(
 #pragma HLS INTERFACE s_axilite port=return bundle=CTRL
 
 
-    // ========================================================
-    // Internal network memories
-    // ========================================================
-
     static float w1[STATE_SIZE][HIDDEN1_SIZE];
     static float b1[HIDDEN1_SIZE];
     static float w2[HIDDEN1_SIZE][HIDDEN2_SIZE];
@@ -2067,11 +2007,6 @@ void dqn_eva(
 #pragma HLS BIND_STORAGE variable=mb3 type=ram_2p impl=bram
 #pragma HLS BIND_STORAGE variable=vb3 type=ram_2p impl=bram
 
-    // ========================================================
-    // Split replay memory
-    // Large replay storage is mapped to URAM/BRAM instead of FF/LUT.
-    // ========================================================
-
     static float replay_state[REPLAY_SIZE][STATE_SIZE];
     static float replay_next_state[REPLAY_SIZE][STATE_SIZE];
     static int replay_action[REPLAY_SIZE];
@@ -2087,33 +2022,6 @@ void dqn_eva(
     completed_training_episodes = 0;
     completed_validations = 0;
     completed_evaluations = 0;
-
-    // ========================================================
-    // Profiling modes
-    // ========================================================
-    // mode 0: full run = training + validation + final evaluation
-    // mode 1: final evaluation only, using the currently stored network
-    // mode 2: one validation episode only, using the currently stored network
-    // mode 3: inference-only profile loop, using the currently stored network
-    // mode 4: training + validation only, no final evaluation
-    // mode 5: training only, no validation and no final evaluation
-    // mode 6: NN forward layer 1 only
-    // mode 7: NN forward layer 2 only
-    // mode 8: NN output layer only
-    // mode 9: full forward pass + argmax
-    // mode 10: backprop output layer to hidden layer 2
-    // mode 11: backprop hidden layer 2 to hidden layer 1
-    // mode 12: Adam update for W3/B3
-    // mode 13: Adam update for W2/B2
-    // mode 14: Adam update for W1/B1
-    // mode 15: one complete train sample update
-    // mode 16: replay store + load access
-    //
-    // Important:
-    // Modes 1, 2, and 3 should be called after one training call
-    // without reloading/resetting the overlay, so that the static
-    // FPGA memories still contain the trained network.
-    // ========================================================
 
 
     if (mode == 6) {
