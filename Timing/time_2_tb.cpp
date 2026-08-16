@@ -3,19 +3,6 @@
 #include <chrono>
 #include <cstring>
 
-// ============================================================
-// Testbench for dqn_eva_nn_internal_profile.cpp
-// ============================================================
-// Purpose:
-// - Checks that all neural-network internal profiling modes compile and run.
-// - Prints software C-simulation timing for each profiling mode.
-// - Board-level timing should still be measured using run_nn_internal_profile.py.
-//
-// Notes:
-// - C simulation timing is NOT FPGA timing.
-// - For FPGA cycle latency, use Vitis HLS csynth.rpt.
-// - For real board timing, use the PYNQ profiling script.
-// ============================================================
 
 #define STATE_SIZE 3
 #define HIDDEN1_SIZE 32
@@ -40,8 +27,6 @@
 #define NN_TRAIN_SAMPLE_PROFILE_STEPS 10
 #define REPLAY_PROFILE_STEPS 10000
 
-// Keep this 0 for normal HLS C simulation.
-// Set to 1 only if you also want to run long full-workflow modes.
 #ifndef RUN_FULL_WORKFLOW_TESTS
 #define RUN_FULL_WORKFLOW_TESTS 0
 #endif
@@ -96,9 +81,6 @@ void dqn_eva(
 );
 }
 
-// ============================================================
-// Global buffers to avoid stack overflow in C simulation.
-// ============================================================
 
 static int training_episode[MAX_EPISODES];
 static int training_episode_length[MAX_EPISODES];
@@ -232,9 +214,9 @@ static RunResult run_mode(int mode, unsigned int seed, bool clear_buffers) {
         clear_output_buffers();
     }
 
-    int completed_training_episodes = 0; // used as checksum by profiling modes
+    int completed_training_episodes = 0; 
     int completed_validations = 0;
-    int completed_evaluations = 0;        // used as completed iteration count by profiling modes
+    int completed_evaluations = 0;        
 
     auto start_time = std::chrono::high_resolution_clock::now();
 
